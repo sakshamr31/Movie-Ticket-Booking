@@ -1,0 +1,26 @@
+@import "tailwindcss";
+
+/* @theme {
+  --color-primary: #F84565;
+  --color-primary-dull: #D63385
+} */
+
+* {
+  font-family:'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+  /* scrollbar-width: thin;
+  scrollbar-color: #78777 #1e1e1e; */
+}
+
+body {
+  color: white;
+  background-color: black;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+}
+
+::-webkit-calendar-picker-indicator{
+  filter: invert(1);
+}
