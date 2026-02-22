@@ -25,4 +25,6 @@ const showSchema = new mongoose.Schema(
     }
 );
 
-export const Show = mongoose.model("Show", showSchema);
+const Show = mongoose.model("Show", showSchema);
+
+export default Show;
