@@ -1,11 +1,15 @@
 import React, { useEffect, useState } from 'react'
 import { ChartLineIcon, CircleDollarSignIcon, PlayCircleIcon, StarIcon, UsersIcon } from 'lucide-react';
-import { dummyDashboardData } from '../../assets/assets.js';
+// import { dummyDashboardData } from '../../assets/assets.js';
 import Loading from '../../components/Loading.jsx'
 import Title from '../../components/admin/Title.jsx';
 import { dateFormat } from '../../lib/dateFormat.js';
+import { useAppContext } from '../../context/AppContext.jsx';
+import toast from 'react-hot-toast';
 
 const Dashboard = () => {
+
+  const { axios, getToken, user, image_base_url } = useAppContext();
 
   const currency = import.meta.env.VITE_CURRENCY;
 
@@ -26,7 +30,7 @@ const Dashboard = () => {
   },
   {
     title: 'Total Revenue',
-    value: currency + dashboardData.totalRevenue || '0',
+    value: `${currency}${dashboardData.totalRevenue ?? 0}`,
     icon: CircleDollarSignIcon,
   },
   {
@@ -42,13 +46,39 @@ const Dashboard = () => {
 ];
 
   const fetchDashboardData = async () => {
-    setDashboardData(dummyDashboardData);
-    setLoading(false);
+    try{
+      const token = await getToken();
+
+      const { data } = await axios.get("/api/admin/dashboard", {
+        headers: {
+          Authorization: `Bearer ${ token }`
+        }
+      });
+
+      if(data.success){
+        setDashboardData(data.dashboardData);
+      }
+      else{
+        toast.error(data.message);
+      }
+    }
+
+    catch(error){
+      toast.error(error.message || "Error fetching dashboard data");
+    }
+
+    finally{
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
-    fetchDashboardData();
-  }, []);
+    if(!user){
+      return;
+    } 
+    
+    fetchDashboardData()
+  }, [user]);
 
   return !loading ? (
     <>
@@ -87,7 +117,7 @@ const Dashboard = () => {
             className="w-55 rounded-lg overflow-hidden h-full pb-3 border border-gray-200 hover:-translate-y-1 transition duration-300">
 
             <img
-              src={show.movie.poster_path}
+              src={image_base_url + show.movie.poster_path}
               alt=""
               className="h-60 w-full object-cover" />
 
@@ -99,7 +129,7 @@ const Dashboard = () => {
 
               <p className="flex items-center gap-1 text-sm text-gray-400 mt-1 pr-1">
                 <StarIcon className="w-4 h-4 text-gray-200 fill-red-600" />
-                {show.movie.vote_average.toFixed(1)}
+                {show.movie.vote_average?.toFixed(1) ?? "0.0"}
               </p>
             </div>
 

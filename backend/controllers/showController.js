@@ -33,8 +33,6 @@ export const getNowPlayingMovies = async (req, res) => {
 
 //API to add new show to the database
 export const addShow = async (req, res) => {
-    console.log("TMDB TOKEN LOCAL:", process.env.TMDB_BEARER_TOKEN);
-
     try{
         const { movieId, showsInput, showPrice } = req.body;
 
@@ -130,7 +128,102 @@ export const addShow = async (req, res) => {
 
         return res.status(500).json({
             success: false, 
-            message: error.message
+            message: "Internal Server Error"
+        });
+    }
+}
+
+
+//API to get all shows from database
+export const getAllShows = async (req, res) => {
+    try{
+        const shows = (await Show.find(
+            {showDateTime: { $gte: new Date() }
+        })
+        .sort({ showDateTime: 1 })
+        .populate('movie'))
+
+        //filter unique shows 
+        const uniqueMoviesMap = new Map();
+
+        shows.forEach(show => {
+            uniqueMoviesMap.set(show.movie._id.toString(), show.movie);
+        });
+
+        return res.status(200).json({
+            success: true, 
+            shows: Array.from(uniqueMoviesMap.values())
+        });
+    }
+
+    catch(error){
+        console.log(error.response?.data || error.message || error);
+
+        return res.status(500).json({
+            success: false, 
+            message: "Internal Server Error"
+        });
+    }
+}
+
+
+//API to get a single show from the database
+export const getShow = async (req, res) => {
+    try{
+        const { movieId } = req.params;
+
+        if (!movieId) {
+            return res.status(400).json({
+                success: false,
+                message: "Movie ID is required"
+            });
+        }
+
+        //get all upcoming shows for the movie
+        const shows = await Show.find({
+            movie: movieId,
+            showDateTime: { $gte: new Date() }  
+        })
+        .sort({ showDateTime: 1 });
+
+        const movie = await Movie.findById(movieId);
+
+        if (!movie) {
+            return res.status(404).json({
+              success: false,
+              message: "Movie not found"
+            });
+        }
+
+        const dateTime = {};
+
+        shows.forEach((show) => {
+            const date = show.showDateTime.toISOString()
+            .split("T")[0];
+
+            if(!dateTime[date]){
+                dateTime[date] = []
+            }
+
+            dateTime[date].push({
+                time: show.showDateTime, 
+                showId: show._id
+            });
+        });
+
+        return res.status(200).json({
+            success: true, 
+            movie, 
+            dateTime
+        });
+    }
+
+    catch(error){
+        console.log(error.response?.data || error.message || error);
+
+        return res.status(500).json({
+            success: false, 
+            message: "Internal Server Error"
         });
     }
 }

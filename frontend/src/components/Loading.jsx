@@ -1,6 +1,20 @@
 import React from 'react'
+import { useEffect } from 'react';
+import { useNavigate, useParams } from 'react-router-dom'
 
 const Loading = () => {
+
+  const { nextURL } = useParams();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if(nextURL){
+      setTimeout(() => {
+        navigate("/" + nextURL);
+      }, 3000);
+    }
+  }, [nextURL, navigate]);
+
   return (
     <div className='flex justify-center items-center h-[80vh]'>
 

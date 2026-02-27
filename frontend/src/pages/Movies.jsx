@@ -1,15 +1,19 @@
 import React from 'react'
-import { dummyShowsData } from '../assets/assets.js'
+// import { dummyShowsData } from '../assets/assets.js'
 import MovieCard from '../components/MovieCard.jsx';
+import { useAppContext } from '../context/AppContext.jsx';
 
 const Movies = () => {
-  return dummyShowsData.length > 0 ?  (
-    <div className='relative my-30 mb-40 px-6 md:px-16 lg:px-40 xl:px-44 overflow-hidden min-h-[80vh]'>
+
+  const { shows } = useAppContext();
+
+  return shows?.length > 0 ?  (
+    <div className='relative my-28 mb-40 px-6 md:px-16 lg:px-40 xl:px-44 overflow-hidden min-h-[80vh]'>
 
       <h1 className='text-lg font-medium my-5 text-cyan-700 bg-green-100 rounded-lg px-4 py-1 inline-block'>Now Showing</h1>
 
       <div className='flex flex-wrap max-sm:justify-center gap-8'>
-        {dummyShowsData.map((movie) => (
+        {shows.map((movie) => (
           <MovieCard movie={movie} key={movie._id} />
         )) }
       </div>
