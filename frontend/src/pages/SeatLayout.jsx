@@ -27,7 +27,7 @@ const SeatLayout = () => {
       const { data } = await axios.get(`/api/show/${id}`);
 
       if(data.success){
-        setShow(data.show);
+        setShow(data);
       }
     }
 
