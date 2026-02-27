@@ -147,7 +147,9 @@ export const getAllShows = async (req, res) => {
         const uniqueMoviesMap = new Map();
 
         shows.forEach(show => {
-            uniqueMoviesMap.set(show.movie._id.toString(), show.movie);
+            if(show.movie){
+                uniqueMoviesMap.set(show.movie._id.toString(), show.movie);
+            }
         });
 
         return res.status(200).json({
