@@ -17,6 +17,7 @@ const Favourite = () => {
           <MovieCard movie={movie} key={movie._id} />
         )) }
       </div>
+      
     </div>
   ) : (
     <div className='flex flex-col items-center justify-center h-screen'>

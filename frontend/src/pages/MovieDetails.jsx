@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { dummyDateTimeData, dummyShowsData } from '../assets/assets.js';
+// import { dummyDateTimeData, dummyShowsData } from '../assets/assets.js';
 import { Heart, PlayCircleIcon, StarIcon } from 'lucide-react';
 import { timeFormat } from '../lib/timeFormat';
 import DateSelect from '../components/DateSelect.jsx';
@@ -56,7 +56,9 @@ const MovieDetails = () => {
     }
   }
 
-  const isFavourite = favouriteMovies?.some(movie => movie._id === id);
+  const isFavourite = favouriteMovies?.some(
+    movie => movie._id.toString() === id.toString()
+  );
 
   useEffect(() => {
     getShow();

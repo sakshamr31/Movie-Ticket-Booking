@@ -113,12 +113,14 @@ export const getFavourite = async (req, res) => {
             });
         }
 
+        const user = await clerkClient.users.getUser(auth.userId);
+
         const favourites = user.privateMetadata?.favourites || [];
 
         if(favourites.length === 0){
             return res.status(200).json({
                 success: true, 
-                movies
+                movies: []
             });
         }
 
