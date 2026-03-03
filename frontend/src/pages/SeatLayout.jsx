@@ -17,6 +17,7 @@ const SeatLayout = () => {
   const [selectedTime, setSelectedTime] = useState(null);
   const [show, setShow] = useState(null);
   const [occupiedSeats, setOccupiedSeats] = useState([]);
+  const [loadingSeats, setLoadingSeats] = useState(false);
 
   const navigate = useNavigate();
 
@@ -61,13 +62,14 @@ const SeatLayout = () => {
         {Array.from({ length: count }, (_, i) => {
 
           const seatId = `${row}${i + 1}`;
+
           return (
             <button
               key={seatId}
-              disabled={occupiedSeats.includes(seatId)}
+              disabled={loadingSeats || occupiedSeats.includes(seatId)}
               onClick={() => handleSeatClick(seatId)}
-              className={`h-8 w-8 rounded border border-gray-200 cursor-pointer ${
-                selectedSeats.includes(seatId) && "bg-green-500 text-white" } ${occupiedSeats.includes(seatId) && "opacity-50 cursor-not-allowed"}` }>
+              className={`h-8 w-8 rounded cursor-pointer border border-gray-200 ${
+                selectedSeats.includes(seatId) && "bg-green-500 text-white" } ${occupiedSeats.includes(seatId) && "opacity-40 cursor-not-allowed"}` }>
               {seatId}
             </button>
           );
@@ -79,7 +81,9 @@ const SeatLayout = () => {
 
   const getOccupiedSeats = async () => {
     try{
-      const { data } = await axios.get(`/api/bookings/seats/${selectedTime.showId}`);
+      setLoadingSeats(true);
+
+      const { data } = await axios.get(`/api/booking/seats/${selectedTime.showId}`);
 
       if(data.success){
         setOccupiedSeats(data.occupiedSeats);
@@ -92,6 +96,10 @@ const SeatLayout = () => {
 
     catch(error){
       console.error(error.response?.data || error.message);
+    }
+
+    finally{
+      setLoadingSeats(false);
     }
   }
 
@@ -124,7 +132,7 @@ const SeatLayout = () => {
     }
 
     catch(error){
-      toast.error(error.message);
+      toast.error(error.response?.data?.message || error.message);
     }
   }
 
@@ -185,7 +193,9 @@ const SeatLayout = () => {
           </div>
         </div>
 
-        <button onClick={bookTickets} className='flex items-center gap-1 mt-20 px-8 py-3 text-sm bg-red-500 hover:bg-red-600 hover:opacity-90 hover:scale-105 transition rounded-full font-medium cursor-pointer active:scale-95'>
+        <button 
+          onClick={bookTickets} 
+          className='flex items-center gap-1 mt-20 px-8 py-3 text-sm bg-red-500 hover:bg-red-600 hover:opacity-90 hover:scale-105 transition rounded-full font-medium cursor-pointer active:scale-95'>
           Proceed to Checkout
           <ArrowRightIcon strokeWidth={3} className='w-4 h-4' />
         </button>

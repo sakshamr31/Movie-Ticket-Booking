@@ -90,11 +90,13 @@ export const addShow = async (req, res) => {
         showsInput.forEach(show => {
             const showDate = show.date;
             show.time.forEach((time) => {
-                const dateTimeString = `${showDate}T${time}:00`;
+                const [hours, minutes] = time.split(":").map(Number);
+
+                const showDateObj = new Date(`${showDate} T ${time}`);
 
                 showsToCreate.push({
                     movie: movieId, 
-                    showDateTime: new Date(dateTimeString), 
+                    showDateTime: showDateObj, 
                     showPrice, 
                     occupiedSeats: {}
                 });
@@ -106,7 +108,7 @@ export const addShow = async (req, res) => {
             showDateTime: { $in: showsToCreate.map(s => s.showDateTime) }
         });
 
-        if (existingShow) {
+        if(existingShow){
             return res.status(409).json({
                 success: false,
                 message: "Show already exists",
@@ -200,11 +202,10 @@ export const getShow = async (req, res) => {
         const dateTime = {};
 
         shows.forEach((show) => {
-            const date = show.showDateTime.toISOString()
-            .split("T")[0];
+            const date = show.showDateTime.toLocaleDateString("en-CA");
 
             if(!dateTime[date]){
-                dateTime[date] = []
+                dateTime[date] = [];
             }
 
             dateTime[date].push({

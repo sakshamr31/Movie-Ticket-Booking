@@ -1,8 +1,11 @@
 import { Inngest } from "inngest";
 import User from "../models/User.js";
+import Booking from "../models/Booking.js";
+import Show from "../models/Show.js";
 
 // Create a client to send and receive events
 export const inngest = new Inngest({ id: "movie-ticket-booking" });
+
 
 //Inngest Fn. to save user data to a database
 const syncUserCreation = inngest.createFunction(
@@ -10,7 +13,7 @@ const syncUserCreation = inngest.createFunction(
     { event: 'clerk/user.created'},
 
     async ({ event }) => {
-        const { id, first_name, last_name, email_addresses, image_url } = event.date;
+        const { id, first_name, last_name, email_addresses, image_url } = event.data;
 
         const userData = {
             _id: id, 
@@ -22,6 +25,7 @@ const syncUserCreation = inngest.createFunction(
         await User.create(userData);
     }
 ); 
+
 
 //Inngest Fn. to delete user from database
 const syncUserDeletion = inngest.createFunction(
@@ -35,16 +39,16 @@ const syncUserDeletion = inngest.createFunction(
     }
 );
 
+
 //Inngest Fn. to update user in database
 const syncUserUpdation = inngest.createFunction(
     { id: 'update-user-from-clerk' }, 
     { event: 'clerk/user.updated'},
 
     async ({ event }) => {
-        const { id, first_name, last_name, email_addresses, image_url } = event.date;
+        const { id, first_name, last_name, email_addresses, image_url } = event.data;
 
-        const userData = {
-            _id: id, 
+        const userData = { 
             email: email_addresses[0].email_address, 
             name: first_name + ' ' + last_name, 
             image: image_url
@@ -54,9 +58,50 @@ const syncUserUpdation = inngest.createFunction(
     }
 );
 
+
+//Inngest fn. to release seats and delete booking
+const releaseSeatsAndDeleteBooking = inngest.createFunction(
+    { id: 'release-seats-and-delete-booking' }, 
+    { event: 'app/checkPayment'}, 
+
+    async ({ event, step }) => {
+        const tenMinutesLater = new Date(Date.now() + 10 * 60 * 1000);
+
+        await step.sleepUntil('wait-for-10-minutes', tenMinutesLater);
+
+        await step.run('check-payment-status', async () => {
+            const bookingId = event.data.bookingId;
+            const booking = await Booking.findById(bookingId);
+
+            if(!booking || booking.isPaid){
+                return;
+            }
+
+            const show = await Show.findById(booking.show);
+
+            if(!show){
+                return;
+            }
+
+            booking.bookedSeats.forEach(seat => {
+                if(show.occupiedSeats[seat]){
+                    delete show.occupiedSeats[seat];
+                }
+            });
+
+            show.markModified('occupiedSeats');
+
+            await show.save();
+            await Booking.findByIdAndDelete(booking._id);
+        });
+    }
+);
+
+
 // Create an empty array where we'll export future Inngest functions
 export const functions = [
     syncUserCreation, 
     syncUserDeletion,
-    syncUserUpdation 
+    syncUserUpdation, 
+    releaseSeatsAndDeleteBooking 
 ];
