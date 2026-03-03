@@ -123,7 +123,7 @@ export const createBooking = async (req, res) => {
             metadata: {
                 bookingId: booking._id.toString()
             }, 
-            expires_at: Math.floor(Date.now() / 1000) + 10 * 60,        //expires in 10 mins after seat locking
+            expires_at: Math.floor(Date.now() / 1000) + 30 * 60,        //expires in 10 mins after seat locking
         });
 
         booking.paymentLink = session.url
