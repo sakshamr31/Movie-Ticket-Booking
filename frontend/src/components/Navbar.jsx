@@ -26,9 +26,9 @@ const Navbar = () => {
 
         <Link onClick={() => {scrollTo(0, 0); setIsOpen(false)} } to="/movies" className='text-amber-50 hover:text-yellow-100 hover:scale-105'>Movies</Link>
 
-        <Link onClick={() => {scrollTo(0, 0); setIsOpen(false)} } to="/" className='text-amber-50 hover:text-yellow-100 hover:scale-105'>Theatres</Link>
+        {/* <Link onClick={() => {scrollTo(0, 0); setIsOpen(false)} } to="/" className='text-amber-50 hover:text-yellow-100 hover:scale-105'>Theatres</Link>
 
-        <Link onClick={() => {scrollTo(0, 0); setIsOpen(false)} } to="/" className='text-amber-50 hover:text-yellow-100 hover:scale-105'>Releases</Link>
+        <Link onClick={() => {scrollTo(0, 0); setIsOpen(false)} } to="/" className='text-amber-50 hover:text-yellow-100 hover:scale-105'>Releases</Link> */}
 
         <Link onClick={() => {scrollTo(0, 0); setIsOpen(false)} } to="/favourite" className='text-amber-50 hover:text-yellow-100 hover:scale-105'>Favourites</Link>
       </div>

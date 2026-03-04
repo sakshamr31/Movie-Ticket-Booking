@@ -52,7 +52,7 @@ const ListBookings = () => {
 
           <thead>
             <tr className="bg-neutral-800 text-left text-white">
-              <th className="p-2 font-medium pl-5">User Name</th>
+              {/* <th className="p-2 font-medium pl-5">User Name</th> */}
               <th className="p-2 font-medium">Movie Name</th>
               <th className="p-2 font-medium">Show Time</th>
               <th className="p-2 font-medium">Seats</th>
@@ -65,7 +65,7 @@ const ListBookings = () => {
               bookings.map((item, index) => (
                 <tr key={index} className="border-b border-gray-200 bg-neutral-700 even:bg-gray-500">
 
-                  <td className="p-2 min-w-45 pl-5">{item?.user?.name}</td>
+                  {/* <td className="p-2 min-w-45 pl-5">{item?.user?.name}</td> */}
 
                   <td className="p-2">{item?.show?.movie?.title}</td>
 
