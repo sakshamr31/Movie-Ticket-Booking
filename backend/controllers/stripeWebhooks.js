@@ -1,5 +1,6 @@
 import stripe from 'stripe';
 import Booking from '../models/Booking.js';
+import { inngest } from "../inngest/index.js";
 
 export const stripeWebhooks = async (req, res) => {
     const stripeInstance = new stripe(process.env.STRIPE_SECRET_KEY);
@@ -31,6 +32,13 @@ export const stripeWebhooks = async (req, res) => {
                     payment_intent: paymentIntent.id
                 });
 
+                if(!sessionList.data.length){
+                    return res.status(400).json({
+                        success:false,
+                        message:"Session not found"
+                    });
+                }
+
                 const session = sessionList.data[0];
                 const { bookingId } = session.metadata;
 
@@ -42,7 +50,7 @@ export const stripeWebhooks = async (req, res) => {
                 //send confirmation email
                 await inngest.send({
                     name: 'app/show.booked', 
-                    data: {bookingId}
+                    data: { bookingId }
                 });
 
                 break;

@@ -102,7 +102,7 @@ const releaseSeatsAndDeleteBooking = inngest.createFunction(
 //inngest fn. to send a confirmation email
 const sendBookingConfirmationEmail = inngest.createFunction(
     { id: 'send-booking-confirmation-email' }, 
-    { event: 'app/show.Booked'}, 
+    { event: 'app/show.booked'}, 
 
     async ({ event, step}) => {
         const { bookingId } = event.data;
