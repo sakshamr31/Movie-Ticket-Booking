@@ -115,6 +115,11 @@ const sendBookingConfirmationEmail = inngest.createFunction(
             }
         }).populate('user');
 
+        if(!booking || !booking.user || !booking.show){
+            console.log("Booking not found");
+            return;
+        }
+
         await sendEmail({
             to: booking.user.email, 
             subject: `Payment Confirmation: ${booking.show.movie.title} booked!`, 
